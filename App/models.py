@@ -1,0 +1,39 @@
+from sqlalchemy import Column, DateTime, ForeignKey,String,Integer,Boolean, func
+from .database import Base
+from sqlalchemy.orm import relationship
+
+
+class Project(Base):
+    __tablename__='Project'
+
+    id=Column(Integer, primary_key=True)
+    project_name=Column(String, nullable=False)
+    description=Column(String,nullable=False)
+    created_at=Column(DateTime, server_default=func.now())
+    end_date= Column(DateTime, nullable=False)
+    project_admin=Column(Integer,ForeignKey("Users.id",ondelete="CASCADE"))
+    Owner=relationship("User")
+    
+
+    
+
+class User(Base):
+    __tablename__='Users'
+
+    id=Column(Integer, primary_key=True)
+    first_name=Column(String,nullable=False)
+    last_name=Column(String,nullable=False)
+    email=Column(String,nullable=False,unique=True)
+    password=Column(String,nullable=False)
+    phone_number=Column(String,nullable=False,unique=True)
+    created_at=Column(DateTime, server_default=func.now())
+    role=Column(String,nullable=False)
+    projects=relationship("ProjectMember", back_populates="member_details")
+
+class ProjectMember(Base):
+    __tablename__="ProjectMembers"
+    id=Column(Integer,primary_key=True)
+    user_id=Column(Integer,ForeignKey("Users.id",ondelete="CASCADE"))
+    project_id=Column(Integer,ForeignKey("Project.id",ondelete="CASCADE"))
+    member_details=relationship("User",back_populates="projects")
+    project_details=relationship("Project")
