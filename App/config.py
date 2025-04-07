@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     db_port:str
     db_name:str
     redis_host:str
+    secret_key:str
+    algorithm:str
+    access_token_expire_minutes:int
     
     redis_port: str="6379"
     

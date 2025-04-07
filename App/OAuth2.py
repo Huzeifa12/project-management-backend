@@ -12,20 +12,21 @@ from App import models
 from App.database import get_db
 from sqlalchemy.orm import Session
 from App.models import User
+from App.config import settings
 
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl="/login/")
 
 async def create_access_token(data:dict):
     pay_load=data.copy()
-    time_to_expire=datetime.utcnow()+ timedelta(minutes=100)
+    time_to_expire=datetime.utcnow()+ timedelta(settings.access_token_expire_minutes)
     pay_load["exp"]=time_to_expire
     
     
-    token=jwt.encode(pay_load,"123456","HS256" )
+    token=jwt.encode(pay_load,settings.secret_key,settings.algorithm )
     return token
 
 def get_current_user(token: str=Depends(oauth2_scheme), db: Session=Depends(get_db)):
-    payload=jwt.decode(token,"123456","HS256")
+    payload=jwt.decode(token,settings.secret_key,settings.algorithm)
 
     current_user_id=payload["id"]
     if not current_user_id:
