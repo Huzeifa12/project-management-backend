@@ -1,4 +1,5 @@
 from typing import Optional
+from fastapi import File, Form, UploadFile
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
@@ -24,6 +25,11 @@ class CreateUserSchemaBase(BaseModel):
     email: EmailStr
     phone_number: str
     password: str
+
+class UpdateUserSchemaBase(BaseModel):
+    email: EmailStr
+    password:str
+    
 
 class UserDetailsForProject(BaseModel):
     first_name:str 
@@ -62,3 +68,8 @@ class ProjectMemberDetails(BaseModel):
 class ViewProjectMembers(BaseModel):
     id:int
     member:ProjectMemberDetails
+
+class FileUploadSchema(BaseModel):
+
+    id:int=Form(...)
+    

@@ -68,9 +68,10 @@ class ProjectService:
             return None
         return project
     
-    def delete_project(self, id:str,db:Session):
+    async def delete_project(self, id:int,db:Session):
           
-        project_to_delete=self.get_project(id,db)
+        project_to_delete=await self.get_project(id,db)
+        print(f"aaaaaaaaaaaaaaaaaaaaaa{project_to_delete}")
         if  project_to_delete==None:
             
             raise HTTPException(status_code=status.HTTP_202_ACCEPTED, detail=f"Project with id of {id} does not exist")

@@ -24,7 +24,7 @@ async def create_access_token(data:dict):
     token=jwt.encode(pay_load,"123456","HS256" )
     return token
 
-async def get_current_user(token: str=Depends(oauth2_scheme), db: Session=Depends(get_db)):
+def get_current_user(token: str=Depends(oauth2_scheme), db: Session=Depends(get_db)):
     payload=jwt.decode(token,"123456","HS256")
 
     current_user_id=payload["id"]
