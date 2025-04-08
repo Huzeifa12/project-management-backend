@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy import text
 
-from App.Routers import Auth, filehandling, user
+from App.Routers import Auth, filehandling, user,admin
 from .config import settings
 from .database import  engine,Base,get_db
 from . import models
@@ -35,6 +35,7 @@ app.include_router(project.router)
 app.include_router(user.router)
 app.include_router(Auth.router)
 app.include_router(filehandling.router)
+app.include_router(admin.router)
 
 
 

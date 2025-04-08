@@ -1,5 +1,6 @@
 from fastapi import Depends,APIRouter, HTTPException,status
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
 from App import OAuth2, models, utils
@@ -33,20 +34,20 @@ async def login_user(login_info:OAuth2PasswordRequestForm=Depends(),db:Session= 
         return{"access_token":access_token, "token_type":"bearer"}
 
 @router.put("/update-password/")
-async def update_password(update_info:UpdateUserSchemaBase, db:Session=Depends(get_db)):
-      user=db.query(models.User).filter(models.User.email==update_info.email)
+async def update_password(email:EmailStr,update_info:UpdateUserSchemaBase, db:Session=Depends(get_db)):
+      user=db.query(models.User).filter(models.User.email==email)
       if not user.first():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND , detail=f"User with with email of {update_info.email} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND , detail=f"User with with email of {email} not found")
       update_info.password=utils.password_hasher(update_info.password)
       user.update(update_info.model_dump(), synchronize_session=False)
       
       db.commit()
       
-      return {"message":f"User with email {update_info.email} update succesfully"}
+      return {"message":f"User with email {email} update succesfully"}
 
         
   
 @router.get("/get_user" )
 def get_profile(user:dict=Depends(get_current_user)):
      
-      return user.id
+      return user

@@ -15,13 +15,15 @@ router=APIRouter(
 ProjectService=ProjectService()
 admin_auth=CheckRole(["admin"])
 
-@router.post("/create_project",status_code=status.HTTP_201_CREATED,response_model=ProjectResponse)
+@router.post("/create-project",status_code=status.HTTP_201_CREATED,response_model=ProjectResponse)
 async def create_project(projectinfo:ProjectSchemaBase,db:Session=Depends(get_db),user: dict=Depends(get_current_user),_:bool=Depends(admin_auth)):
     create_project=await ProjectService.createProject(projectinfo,db,user.id)
     return create_project
     
 
-
+@router.get("/view-all-projects",response_model=list[ProjectResponse])
+async def view_all_projects(db:Session=Depends(get_db),_:bool=Depends(admin_auth)):
+    return await ProjectService.view_all_projects(db)
 
 @router.get("/view-project",response_model=ProjectResponse)
 async def view_project_by_id_search(db:Session=Depends(get_db),id:Optional[int]=None,user:dict=Depends(get_current_user)):

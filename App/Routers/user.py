@@ -18,3 +18,4 @@ userService=UserService()
 def create_user(user_detail:CreateUserSchemaBase,db:Session=Depends(get_db)):
     
     return userService.create_user(user_detail,db)
+

@@ -25,9 +25,13 @@ class CreateUserSchemaBase(BaseModel):
     email: EmailStr
     phone_number: str
     password: str
+class CreateUserSchemaBase(CreateUserSchemaBase):
+    
+    role:str="member"
+class CreateAdminSchemaBase(CreateUserSchemaBase):
+    role: str = "admin"
 
 class UpdateUserSchemaBase(BaseModel):
-    email: EmailStr
     password:str
     
 
@@ -47,14 +51,7 @@ class ProjectResponse(BaseModel):
 
 
 
-class CreateUserSchemaBase(BaseModel):
-    id: int
-    first_name:str
-    last_name: str
-    email: EmailStr
-    phone_number: str
-    password: str
-    role:str="member"
+
     
     
 class ViewProjectDetails(BaseModel):

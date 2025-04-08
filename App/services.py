@@ -33,9 +33,7 @@ class ProjectService:
 
 
     async def createProject(self,projectinfo:ProjectSchemaBase,db:Session,owner:int):
-        
-
-            
+                   
         new_project=models.Project(project_admin=owner,**projectinfo.model_dump())   
         db.add(new_project)
         try:
@@ -58,7 +56,9 @@ class ProjectService:
 
         return new_project
         
-    
+    async def view_all_projects(self, db:Session):
+        projects=db.query(models.Project).all()
+        return projects
 
     async def get_project(self, id:int,db:Session):
           
