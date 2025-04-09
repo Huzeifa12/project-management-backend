@@ -38,6 +38,20 @@ class ProjectMember(Base):
     member_details=relationship("User",back_populates="projects")
     project_details=relationship("Project")
 
+class Task(Base):
+    __tablename__="Tasks"
+    id=Column(Integer,primary_key=True)
+    sender_id=Column(Integer, ForeignKey("Users.id",ondelete="CASCADE"),nullable=False)
+    assigned_to=Column(Integer,ForeignKey("Users.id",ondelete="CASCADE"),nullable=False)
+    project_id=Column(Integer,ForeignKey("Project.id",ondelete="CASCADE"),nullable=False)
+    title=Column(String,nullable=False)
+    description=Column(String,nullable=False)
+    assigned_at=Column(DateTime,server_default=func.now())
+
+    sender=relationship("User",foreign_keys=[sender_id])
+    receiver=relationship("User", foreign_keys=[assigned_to])
+    project=relationship("Project",foreign_keys=[project_id])
+
 
 class File(Base):
     __tablename__="Files"

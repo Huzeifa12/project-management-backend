@@ -25,6 +25,19 @@ class CreateUserSchemaBase(BaseModel):
     email: EmailStr
     phone_number: str
     password: str
+
+class CreateUserResponse(BaseModel):
+    id: int
+    first_name:str
+    last_name: str
+    email: EmailStr
+    phone_number: str
+# class UserResponse(BaseModel):
+
+class ProjectResponseForTask(BaseModel):
+    id:int
+    project_name:str
+
 class CreateUserSchemaBase(CreateUserSchemaBase):
     
     role:str="member"
@@ -69,4 +82,21 @@ class ViewProjectMembers(BaseModel):
 class FileUploadSchema(BaseModel):
 
     id:int=Form(...)
+
+class TaskSchemaBase(BaseModel):
+    id: int
+    sender_id:int
+    assigned_to:int
+    project_id:int
+    title:str
+    description:str
+    assigned_at:datetime
+    
+
+class TaskResponse(TaskSchemaBase):
+    assigned_at:datetime
+    sender:CreateUserResponse
+    receiver:CreateUserResponse
+    project:ProjectResponseForTask
+
     
