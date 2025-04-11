@@ -30,7 +30,7 @@ def get_current_user(token: str=Depends(oauth2_scheme), db: Session=Depends(get_
 
     current_user_id=payload["id"]
     if not current_user_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Could not Validate token", headers={"WWW-Authenticate":"Bearer"})
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Could not Validate token", headers={"WWW-Authenticate":"Bearer"})
     current_user_profile=db.query(models.User).filter(models.User.id==current_user_id).first()
     print(current_user_profile.id,"ooo")
     return current_user_profile

@@ -37,16 +37,16 @@ async def view_project_by_id_search(db:Session=Depends(get_db),id:Optional[int]=
     
 
 @router.put("/update_project/{id}",response_model=ProjectResponse)
-async def update_project(update_info:ProjectUpdateSchemaBase,id: int,db:Session=Depends(get_db),user:dict=Depends(get_current_user),_:bool=Depends(admin_auth)):
-    update_project= await ProjectService.update_project(update_info,id,db)
+async def update_project(update_info:ProjectUpdateSchemaBase,id: int,db:Session=Depends(get_db),current_user:dict=Depends(get_current_user),_:bool=Depends(admin_auth)):
+    update_project= await ProjectService.update_project(update_info,id,current_user,db)
     return update_project
     
 
 
 @router.delete("/delete/{id}")
-async def delete_project_by_id(project_info:ProjectSchemaBase,id:int,db:Session=Depends(get_db),user:dict=Depends(get_current_user),_:bool=Depends(admin_auth)):
+async def delete_project_by_id(id:int,db:Session=Depends(get_db),user:dict=Depends(get_current_user),_:bool=Depends(admin_auth)):
     
-    return await ProjectService.delete_project(id,db)
+    return await ProjectService.delete_project(id,db,user)
 
 
 @router.post("/{project_id}/add-member/{user_id}")
@@ -63,6 +63,6 @@ async def view_my_projects(db:Session=Depends(get_db),user:dict=Depends(get_curr
     return await ProjectService.view_member_project(user.id,db)
 
 @router.delete("/{project_id}/delete-member/{user_id}")
-async def remove_member_from_project(project_id:int,user_id:int, db:Session=Depends(get_db),user:dict=Depends(get_current_user),_:bool=Depends(admin_auth)):
-    return await ProjectService.delete_user_from_project(project_id,user_id,db)
+async def remove_member_from_project(project_id:int,user_id:int, db:Session=Depends(get_db),current_user:dict=Depends(get_current_user),_:bool=Depends(admin_auth)):
+    return await ProjectService.delete_user_from_project(project_id,user_id,current_user,db)
                                  

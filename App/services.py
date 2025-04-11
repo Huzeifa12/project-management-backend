@@ -26,13 +26,14 @@ class ProjectService:
         existing_member=db.query(models.ProjectMember).filter(models.ProjectMember.user_id==user_id , models.ProjectMember.project_id==project_id ).first()
             
         if existing_member :
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=f"user {user_id} is already a member")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=f"userhh {user_id} is already a member")
         return [existing_member,user,project]
 
 
 
 
     async def createProject(self,projectinfo:ProjectSchemaBase,db:Session,owner:int):
+
                    
         new_project=models.Project(project_admin=owner,**projectinfo.model_dump())   
         db.add(new_project)
@@ -65,13 +66,17 @@ class ProjectService:
         project=db.query(models.Project).filter(models.Project.id==id)
           
         if not project.first():
-            return None
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"detail not foundd")
         return project
     
-    async def delete_project(self, id:int,db:Session):
+    async def delete_project(self, id:int,db:Session,user:dict):
+        
+    
           
         project_to_delete=await self.get_project(id,db)
-        print(f"aaaaaaaaaaaaaaaaaaaaaa{project_to_delete}")
+        if project_to_delete.first().project_admin!=user.id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"You are not authorized to perfom this action because you are not the creator of this project")
+        
         if  project_to_delete==None:
             
             raise HTTPException(status_code=status.HTTP_202_ACCEPTED, detail=f"Project with id of {id} does not exist")
@@ -81,18 +86,14 @@ class ProjectService:
         db.commit()
         raise  HTTPException(status_code=status.HTTP_202_ACCEPTED, detail=f"Project with id of {id} deleted succesfully")
     
-    async def update_project(self, update_info:ProjectUpdateSchemaBase,id:int, db:Session):
+    async def update_project(self, update_info:ProjectUpdateSchemaBase,id:int,current_user:dict, db:Session):
          
 
         project_to_update=await self.get_project(id,db)
-        check_project_to_update=project_to_update.first()
-        if check_project_to_update ==None:
-            raise HTTPException(status_code=status.HTTP_202_ACCEPTED,detail=f"Project of id number {id} does not exist")
-         
-       
-        
+        if project_to_update.first().project_admin!=current_user.id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"You are not authorized to perfom this action because you are not the creator of this project")
 
-        try: 
+        try:
             project_to_update.update(update_info.model_dump(),synchronize_session=False)   
             db.commit()
             updated_project=project_to_update.first()
@@ -115,8 +116,11 @@ class ProjectService:
             db.commit()
             return {"message":f"User {check_user_and_project_registered[1].first_name} added to project {check_user_and_project_registered[2].project_name}"} 
     
-    async def delete_user_from_project(self,project_id,user_id,db:Session):
+    async def delete_user_from_project(self,project_id,user_id,current_user:dict,db:Session):
         project=db.query(models.Project).filter(models.Project.id==project_id).first()
+        if project.project_admin!=current_user.id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"You are not authorized to perfom this action because you are not the creator of this project")
+
         if not project:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Project with id of {project_id} not found")
 

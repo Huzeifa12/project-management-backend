@@ -5,7 +5,7 @@ from datetime import datetime
 
 class ProjectSchemaBase(BaseModel):
 
-    id: int
+    #id:int
     project_name:str
     description:str
     end_date:datetime
@@ -61,6 +61,7 @@ class ProjectResponse(BaseModel):
     end_date:datetime
     project_admin: int
     Owner: UserDetailsForProject
+   
 
 
 
@@ -85,7 +86,7 @@ class FileUploadSchema(BaseModel):
 
 class TaskSchemaBase(BaseModel):
     id: int
-    sender_id:int
+    
     assigned_to:int
     project_id:int
     title:str
@@ -94,7 +95,7 @@ class TaskSchemaBase(BaseModel):
     
 
 class TaskResponse(TaskSchemaBase):
-    assigned_at:datetime
+    sender_id:int  
     sender:CreateUserResponse
     receiver:CreateUserResponse
     project:ProjectResponseForTask

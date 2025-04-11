@@ -17,15 +17,15 @@ router=APIRouter(
 
 admin_auth=CheckRole(["admin"])
 @router.post("/",response_model=TaskResponse)
-async def create_task(task_details:TaskSchemaBase, db:Session=Depends(get_db)):
-    new_task=models.Task(**task_details.model_dump())
+async def create_task(task_details:TaskSchemaBase, db:Session=Depends(get_db),current_user:dict=Depends(get_current_user),_:bool=Depends(admin_auth)):
+    new_task=models.Task(sender_id=current_user.id,**task_details.model_dump())
     print(f'{task_details.model_dump()}')
     db.add(new_task)
     try:
         db.commit()
     except IntegrityError as e:
         
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Unique key constraint violated")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Unique key constraint violated{e}")
     
     db.refresh(new_task)
     return new_task
@@ -47,7 +47,13 @@ async def view_all_admin_assigned_task(db:Session=Depends(get_db), current_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f" Admin {current_user.email} has not asaigned any task to anyone")
     
 
-    
-
     return my_task
     
+@router.get("/delete-task")
+async def delete_task(id:int,db:Session=Depends(get_db),_:bool=Depends(admin_auth)):
+    task=db.query(models.Task).filter(models.Task.id==id)
+    if task.first()==None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"task with id of {id} not found")
+    task.delete(synchronize_session=False)
+    db.commit()
+    raise  HTTPException(status_code=status.HTTP_202_ACCEPTED, detail=f"task with id of {id} deleted succesfully")
